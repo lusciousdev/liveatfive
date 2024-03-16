@@ -9,7 +9,7 @@ from .models import *
 from .config import *
 from .util.timeutil import *
 
-def get_when_live(user_id = "", provider = None):
+def get_when_live_string(user_id = "", provider = None):
   if (user_id != "") and (str(user_id) == str(CREATOR_ID)):
     return f"Shouldn't you know, @{CREATOR}."
   
@@ -139,7 +139,6 @@ def get_record(request):
     verb = "has" if not is_creator else "have"
     
     this_year = todaydt.strftime("%Y")
-    month_name = dt.datetime(1971, int(month_filter), 1, 0, 0, 1).strftime("%B")
     
     range_str = ""
     if year_filter is not None and month_filter is not None:
@@ -147,6 +146,7 @@ def get_record(request):
     elif year_filter is not None:
       range_str = " this year" if year_filter == this_year else f" in {year_filter}"
     elif month_filter is not None:
+      month_name = dt.datetime(1971, int(month_filter), 1, 0, 0, 1).strftime("%B")
       range_str = f" in {month_name}"
     
     late = total_streams - ontime - early
@@ -157,9 +157,9 @@ def get_record(request):
     percent = (percent_arg == '%') or (percent_arg.lower() == "percent")
     
     if percent:
-      return_str = f"{get_when_live(user_id)} {pronoun} {verb} been early {round((early * 100.0) / total_streams, 1)}%, on time {round((ontime * 100.0) / total_streams, 1)}%, and late {round(((total_streams-ontime-early) * 100.0) / total_streams, 1)}% of all streams{range_str}."
+      return_str = f"{get_when_live_string(user_id)} {pronoun} {verb} been early {round((early * 100.0) / total_streams, 1)}%, on time {round((ontime * 100.0) / total_streams, 1)}%, and late {round(((total_streams-ontime-early) * 100.0) / total_streams, 1)}% of all streams{range_str}."
     else:
-      return_str = f"{get_when_live(user_id)} {pronoun} {verb} been early {times_early_str} times, on time {times_ontime_str} times, and late {times_late_str} times{range_str}."
+      return_str = f"{get_when_live_string(user_id)} {pronoun} {verb} been early {times_early_str} times, on time {times_ontime_str} times, and late {times_late_str} times{range_str}."
     if streak_length > 1:
       return_str += f" {pronoun} {verb} been {streak_type_str.lower()} {streak_length} streams in a row."
       
