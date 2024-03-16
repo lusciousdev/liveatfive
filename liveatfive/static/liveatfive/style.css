@@ -1,0 +1,135 @@
+@font-face {
+  font-family: Roobert;
+  src: url(./Roobert-Regular.ttf);
+}
+
+:root {
+  --bg: #18181b;
+  --default-color: #efeff1;
+  --accent-color: #fab4ff;
+}
+
+body, html {
+  font-family: Roobert, sans-serif;
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--default-color);
+}
+
+a, a:link, a:visited {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+article {
+  flex: 1;
+}
+
+.centered-wrapper {
+  width: 100%;
+  text-align: center;
+}
+
+.left-align-block {
+  padding-top: 0vh;
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block;
+}
+
+.list-entry {
+  text-align: left;
+  font-family: monospace;
+}
+
+.important-list-entry {
+  text-align: left;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.centered-div {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.headline {
+  font-weight: bold;
+  font-size: 32pt;
+  color: var(--accent-color);
+}
+
+h2.stat-header {
+  color: var(--accent-color);
+  font-size: 22pt;
+  font-style: normal;
+  font-weight: normal !important;
+}
+
+.table-header {
+  color: var(--accent-color);
+}
+
+#islive {
+  font-size: 18pt;
+  padding: 1vw;
+}
+
+#record {
+  font-size: 15pt;
+  padding: 1vw;
+}
+
+#main-footer {
+  padding-top: 15px;
+}
+
+#faq-list {
+  font-size: 12pt;
+}
+
+#notes {
+  padding: 20px;
+}
+
+#history {
+  font-family: monospace;
+  font-size: 11pt;
+}
+
+#history-table {
+  text-align: right;
+  border-collapse: collapse;
+}
+
+#history-table th {
+  padding: 1px 24px;
+  font-size: 12pt;
+  font-weight: normal !important;
+}
+
+#history-table th:first-child {
+  padding: 1px 24px 1px 8px !important;
+}
+
+#history-table th:last-child {
+  padding: 1px 8px 1px 24px !important;
+}
+
+#history-table tr:nth-child(even) {
+  background: #FFFFFF10;
+}
+
+#other-stats-list {
+  font-size: 15pt;
+}

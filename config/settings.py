@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from urllib.parse import quote
+from celery.schedules import crontab
+import luscioustwitch
+
+from .secrets import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'liveatfive'
 ]
 
 MIDDLEWARE = [
@@ -49,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'liveatfive.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -67,16 +73,23 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'liveatfive.wsgi.application'
-
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': MARIADB_DATABASE,
+        'USER': MARIADB_USER,
+        'PASSWORD': MARIADB_PASSWORD,
+        'HOST': MARIADB_HOST,
+        'PORT': MARIADB_PORT,
+        'OPTIONS': {
+          'charset': 'utf8mb4',
+          'use_unicode': True
+        },
     }
 }
 
@@ -111,13 +124,29 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]  #new 
+STATIC_ROOT = BASE_DIR / "staticfiles"  #new
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery
+CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/0"
+CELERY_RESULT_BACKEND = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/0"
+
+CELERY_BEAT_SCHEDULE = {
+  "recalculate_stream_info": {
+    "task": "liveatfive.tasks.get_creator_info",
+    "schedule": 60.0,
+  },
+  "calc_offset_and_streaks": {
+    "task": "liveatfive.tasks.calculate_offset_and_streaks",
+    "schedule": 300.0,
+  }
+}

@@ -1,0 +1,40 @@
+{% extends "liveatfive/base.html" %}
+
+{% load static %}
+
+{% block title %}Live at Five FAQ{% endblock %}
+
+{% block header %}
+<div class="centered-div" id="site-title">
+  <h1 class="headline">Live at Five FAQ</h1>
+</div>
+{% endblock %}
+
+{% block article %}
+<div class="centered-wrapper" id="faq">
+  <div class="left-align-block" style="max-width: 33vw; min-width: 600px;">
+    <ol id="faq-list">
+      <li class="important-list-entry">Why is a stream starting at 5:15:01 considered late?</li>
+      <ul class="answer-list">
+        <li class="list-entry">The chatters union put it to a vote. The response was conclusively that the 15 minute buffer ends at 5:15:00PM</li>
+        <li class="list-entry"><img src="{% static 'liveatfive/img/vote-results.png' %}"></li>
+        <li class="list-entry">UPDATE: In exchange for Will enabling 7tv, the 15 minute buffer has been extended to 5:15:59 PM PST</li>
+      </ul>
+      <li class="important-list-entry">Why a fifteen minute buffer?</li>
+      <ul class="answer-list">
+        <li class="list-entry">The !will command contains the line "(PLEASE RESPECT THE 15 MINUTE BUFFER)"</li>
+        <li class="list-entry"><img src="{% static 'liveatfive/img/!will.png' %}"></li>
+      </ul>
+      <li class="important-list-entry">What happens if the stream crashes and restarts?</li>
+      <ul class="answer-list">
+        <li class="list-entry">It takes the earliest livestream on a given day and determines if it started early, late, or on-time. So crashes should not be an issue.</li>
+      </ul>
+      <li class="important-list-entry">Why?</li>
+      <ul class="answer-list">
+        <li class="list-entry">No clue. Boredom mostly.</li>
+      </ul>
+    </ol>
+  </div>
+</div>
+{% endblock %}
+      

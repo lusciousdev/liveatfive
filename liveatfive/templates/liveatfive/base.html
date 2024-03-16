@@ -1,0 +1,36 @@
+{% load static %}
+
+<!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="{% static 'liveatfive/style.css' %}">
+<link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+<script src="{% static 'util.js' %}"></script>
+<script src="{% static 'ajaxhelpers.js' %}"></script>
+
+{% block stylesheets %}{% endblock %}
+{% block scripts %}{% endblock %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Live at Five{% endblock %}</title>
+  </head>
+  <body>
+    <header>
+      {% block header %}{% endblock %}
+    </header>
+    <article>
+      {% block article %}{% endblock %} 
+    </article>
+    <footer class="centered-div" id="notes">
+      (PLEASE RESPECT THE 15 MINUTE BUFFER)
+      <br>
+      Go check out the stream <a href="https://twitch.tv/itswill">here.</a>
+      <br>
+      Quick links: <a href="{% url 'liveatfive:index' %}">Home</a>, <a href="{% url 'liveatfive:stats' %}">Stats</a>, <a href="{% url 'liveatfive:faq' %}">FAQ</a>
+      <br>
+      Made by <a href="https://luscious.dev">luscious.dev</a>
+    </footer>
+  </body>
+</html>
+

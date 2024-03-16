@@ -1,0 +1,47 @@
+{% extends "liveatfive/base.html" %}
+
+{% load static %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'luxon.min.js' %}"></script>
+<script src="{% static 'liveatfive/liveatfive.js' %}"
+  defer
+  data-islive="{% url 'liveatfive:api_live' %}"
+  data-getrecord="{% url 'liveatfive:api_record' %}">
+</script>
+{% endblock %}
+
+{% block title %}Mr. Live at Five?{% endblock %}
+
+{% block header %}
+  <div class="centered-div" id="site-title">
+    <h1 class="headline">Is itswill Mr. "Live at Five"?</h1>
+  </div>
+{% endblock %}
+
+{% block article %}
+  <div class="centered-div" id="islive"></div>
+  <div class="centered-div" id="record"></div>
+  <div class="centered-wrapper">
+    <div class="left-align-block" id="history">
+      <table id="history-table">
+        <tr class="table-header">
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+        </tr>
+        {% for entry in object_list %}
+        <tr>
+          <th class="live-date">{{ entry.get_pretty_date }}</th>
+          <th class="live-time">{{ entry.get_pretty_start_time }}</th>
+          <th class="live-status">{{ entry.get_punctuality_display }}</th>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div> 
+{% endblock %}
