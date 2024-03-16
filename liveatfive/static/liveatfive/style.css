@@ -32,11 +32,14 @@ body {
 }
 
 article {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  width: 100%;
 }
 
 .centered-wrapper {
-  width: 100%;
   text-align: center;
 }
 
@@ -105,6 +108,12 @@ h2.stat-header {
 #history {
   font-family: monospace;
   font-size: 11pt;
+}
+
+.config-option {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 #history-table {
