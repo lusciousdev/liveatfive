@@ -30,7 +30,10 @@ SECRET_KEY = 'django-insecure-blq=9dp2&nt=w402$t%)hm=h$k3*a3wg)a=i0b_5j$8u8z@%a_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    ".liveatfive.net",
+    "127.0.0.1",
+    ".localhost"]
 
 
 # Application definition
@@ -135,6 +138,29 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  #new
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "./logs/debug.log",
+            "encoding": "utf-8",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
+
+CSRF_TRUSTED_ORIGINS = [ "https://liveatfive.net", "https://www.liveatfive.net", "http://liveatfive.net", "http://www.liveatfive.net" ]
 
 # Celery
 CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/0"
