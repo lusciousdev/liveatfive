@@ -256,7 +256,7 @@ def get_when_live(request):
     
     delta = dt.timedelta(seconds = creatorinfo.average_offset)
     average_time = (dt.datetime.combine(dt.date.today(), GOAL_TIME) + delta)
-    resp = { "average": average_time.strftime("%H:%M:%S") }
+    resp = { "average": average_time.strftime("%I:%M:%S %p") }
     
     return JsonResponse(resp, status = 200)
   except CreatorInfo.DoesNotExist:
