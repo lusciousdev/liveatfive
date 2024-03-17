@@ -163,8 +163,8 @@ LOGGING = {
 CSRF_TRUSTED_ORIGINS = [ "https://liveatfive.net", "https://www.liveatfive.net", "http://liveatfive.net", "http://www.liveatfive.net" ]
 
 # Celery
-CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/0"
-CELERY_RESULT_BACKEND = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/0"
+CELERY_BROKER_URL     = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
+CELERY_RESULT_BACKEND = f"redis://:{CELERY_PASSWORD}@{CELERY_HOST}:{CELERY_PORT}/{CELERY_DATABASE}"
 
 CELERY_BEAT_SCHEDULE = {
   "recalculate_stream_info": {
