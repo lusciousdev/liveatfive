@@ -119,7 +119,7 @@ def get_record(request):
       streak_type = stream.punctuality
       streak_type_str = stream.get_punctuality_display()
       streak_length = 1
-    if (not streak_broken) and (stream.punctuality == streak_type):
+    elif (not streak_broken) and (stream.punctuality == streak_type):
       streak_length += 1
     elif (not streak_broken) and (stream.punctuality != streak_type):
       streak_broken = True

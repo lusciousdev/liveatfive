@@ -91,7 +91,7 @@ class StreamInfo(models.Model):
     
     if local_start_time < ONTIME_START:
       self.punctuality = Punctuality.EARLY
-    elif local_start_time >= ONTIME_START and local_start_time < ONTIME_END:
+    elif local_start_time >= ONTIME_START and local_start_time <= ONTIME_END:
       self.punctuality = Punctuality.ONTIME
     else:
       self.punctuality = Punctuality.LATE
