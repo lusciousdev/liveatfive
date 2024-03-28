@@ -15,14 +15,14 @@ var wasLive = false;
 
 function populateRecord(data)
 {
-  var statusString = "late";
+  var statusString = "eary";
   if (data['streak-status'] == 1)
   {
     statusString = "on time";
   }
-  else if (data['streak-status'] == 2)
+  else if (data['streak-status'] == 0)
   {
-    statusString = "early";
+    statusString = "late";
   }
 
   var recordDiv = `itswill has been on time for {0} out of the {1} streams since January 1st, {5}.

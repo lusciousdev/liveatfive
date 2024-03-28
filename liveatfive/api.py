@@ -89,8 +89,6 @@ def get_record(request):
     if month_str.isdigit() and len(month_str) < 3:
       month_filter = month_str.rjust(2, "0")
   
-  streaminfo_list = StreamInfo.objects.all().order_by('date')
-  
   early = 0  
   ontime = 0
   late = 0
@@ -100,7 +98,7 @@ def get_record(request):
   streak_type_str = ""
   streak_length = 0
   
-  streaminfo_list = StreamInfo.objects.all().order_by('-date')
+  streaminfo_list = StreamInfo.objects.all()
   
   if year_filter is not None and month_filter is not None:
     combofilter = year_filter + month_filter
@@ -113,7 +111,9 @@ def get_record(request):
   if weekday_filter is not None:
     streaminfo_list = streaminfo_list.filter(weekday = weekday_filter)
     
-  for stream in streaminfo_list:
+  streaminfo_list = streaminfo_list.order_by('-date')
+    
+  for stream in streaminfo_list.all():
     # Count out our current streak
     if streak_type is None:
       streak_type = stream.punctuality
