@@ -20,7 +20,7 @@ function populateRecord(data)
   {
     statusString = "on time";
   }
-  else if (data['streak-status'] == 0)
+  else if (data['streak-status'] == 2)
   {
     statusString = "late";
   }
