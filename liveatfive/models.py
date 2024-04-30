@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.http import int_to_base36
 import datetime
 from luscioustwitch import TWITCH_API_TIME_FORMAT
+from django.db.models.signals import pre_save
 
 from .config import *
 from .util.timeutil import *
@@ -86,25 +87,34 @@ class StreamInfo(models.Model):
       "date": self.get_pretty_date(), 
     }
     
-  def calculate_punctuality(self):
+  def calculate_punctuality(self, autosave = False):
     local_start_time = utc_to_local(self.start_time, local_tz = TIMEZONE).time()
-    
+
     if local_start_time < ONTIME_START:
       self.punctuality = Punctuality.EARLY
-    elif local_start_time >= ONTIME_START and local_start_time <= ONTIME_END:
+    elif local_start_time >= ONTIME_START and local_start_time < ONTIME_END:
       self.punctuality = Punctuality.ONTIME
     else:
       self.punctuality = Punctuality.LATE
+    
+    if autosave:
+      self.save()
   
-  def calculate_offset(self):
+  def calculate_offset(self, autosave = False):
     local_start_time = utc_to_local(self.start_time, local_tz = TIMEZONE).time()
     
     td = timediff(local_start_time, GOAL_TIME)
     self.offset = td.seconds + (24.0 * 60.0 * 60.0 * td.days)
     
-  def calculate_weekday(self):
+    if autosave:
+      self.save()
+    
+  def calculate_weekday(self, autosave = False):
     local_start_time = utc_to_local(self.start_time, local_tz = TIMEZONE)
     self.weekday = local_start_time.weekday()
+    
+    if autosave:
+      self.save()
     
   def get_pretty_date(self):
     local_start_time = utc_to_local(self.start_time, local_tz = TIMEZONE)
@@ -126,3 +136,5 @@ class StreamInfo(models.Model):
       self.calculate_punctuality()
       self.calculate_offset()
       self.calculate_weekday()
+      
+      self.save()

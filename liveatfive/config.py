@@ -11,4 +11,4 @@ CREATOR = "itswill"
 CREATOR_ID = 43246220
 
 ONTIME_START = (datetime.datetime.combine(datetime.date.today(), GOAL_TIME) - datetime.timedelta(minutes=BUFFER)).time()
-ONTIME_END   = (datetime.datetime.combine(datetime.date.today(), GOAL_TIME) + datetime.timedelta(minutes=BUFFER, seconds =59 if EXTRA_TIME else 0)).time()
+ONTIME_END   = (datetime.datetime.combine(datetime.date.today(), GOAL_TIME) + datetime.timedelta(minutes=BUFFER, seconds = 60 if EXTRA_TIME else 1)).time()
