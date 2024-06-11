@@ -53,6 +53,7 @@ def get_today(request):
     return JsonResponse({ "error": "Invalid request type." }, 501)
   
   todaydt = utc_to_local(dt.datetime.now(tz = dt.timezone.utc), TIMEZONE)
+  twelvehrsago_dt = utc_to_local(dt.datetime.now(tz = dt.timezone.utc) - dt.timedelta(hours = 12), TIMEZONE)
   
   try:
     creator_info = CreatorInfo.objects.get(creator_id = CREATOR_ID)
@@ -65,7 +66,10 @@ def get_today(request):
   try:
     streaminfo = StreamInfo.objects.get(date = todaydt.strftime(STREAMINFO_DATE_FORMAT))
   except StreamInfo.DoesNotExist:
-    return HttpResponse("No stream data for today.", 200)
+    try:
+      streaminfo = StreamInfo.objects.get(date = twelvehrsago_dt.strftime(STREAMINFO_DATE_FORMAT))
+    except StreamInfo.DoesNotExist:
+      return HttpResponse("No stream data for today.", 200)
   
   return HttpResponse(f"Will was {streaminfo.get_punctuality_display().lower()} today. He went live at {streaminfo.get_pretty_start_time()}.", 200)
 
