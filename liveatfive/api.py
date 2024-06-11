@@ -48,6 +48,28 @@ def get_when_live_string(user_id = "", provider = None):
   return whenLive
 
 @csrf_exempt
+def get_today(request):
+  if request.method != "GET":
+    return JsonResponse({ "error": "Invalid request type." }, 501)
+  
+  todaydt = utc_to_local(dt.datetime.now(tz = dt.timezone.utc), TIMEZONE)
+  
+  try:
+    creator_info = CreatorInfo.objects.get(creator_id = CREATOR_ID)
+  except CreatorInfo.DoesNotExist:
+    return ""
+  
+  if not (creator_info.is_live or creator_info.was_live):
+    return HttpResponse(f"itswill has not gone live yet today.", 200)
+  
+  try:
+    streaminfo = StreamInfo.objects.get(date = todaydt.strftime(STREAMINFO_DATE_FORMAT))
+  except StreamInfo.DoesNotExist:
+    return HttpResponse("No stream data for today.", 200)
+  
+  return HttpResponse(f"Will was {streaminfo.get_punctuality_display().lower()} today. He went live at {streaminfo.get_pretty_start_time()}.", 200)
+
+@csrf_exempt
 def get_record(request):
   if request.method != "GET":
     return JsonResponse({ "error": "Invalid request type." }, 501)

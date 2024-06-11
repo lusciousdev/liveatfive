@@ -13,4 +13,5 @@ urlpatterns = [
   path("api/v1/history/", api.get_history, name="api_history"),
   path("api/v1/when/", api.get_when_live, name="api_when"),
   path("api/v1/streaks/", api.get_streaks, name="api_streaks"),
+  path("api/v1/today/", api.get_today, name="api_today"),
 ]
