@@ -76,32 +76,28 @@ def get_creator_info():
   print(f"Got {len(vods)} videos from the Twitch API")
   for vod in vods:
     try:
-      try:
-        existing_video_object = TwitchVideo.objects.get(vod_id = vod["id"])
-        continue
-      except TwitchVideo.DoesNotExist:
-        videomodel = TwitchVideo(
-          vod_id        = vod["id"],
-          stream_id     = vod["stream_id"],
-          user_id       = vod["user_id"],
-          user_login    = vod["user_login"],
-          user_name     = vod["user_name"],
-          title         = vod["title"],
-          description   = vod["description"],
-          created_at    = datetime.datetime.strptime(vod["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-          published_at  = datetime.datetime.strptime(vod["published_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc),
-          url           = vod["url"],
-          thumbnail_url = vod["thumbnail_url"],
-          viewable      = vod["viewable"],
-          view_count    = vod["view_count"],
-          language      = vod["language"],
-          vod_type      = vod["type"],
-          duration      = vod["duration"],
-        )
-    
-        videomodel.save()
-    except:
-      print("unable to parse twitch vod response")
+      existing_video_object : TwitchVideo
+      existing_video_object, created = TwitchVideo.objects.get_or_create(vod_id = vod["id"])
+      
+      existing_video_object.stream_id     = vod["stream_id"]
+      existing_video_object.user_id       = vod["user_id"]
+      existing_video_object.user_login    = vod["user_login"]
+      existing_video_object.user_name     = vod["user_name"]
+      existing_video_object.title         = vod["title"]
+      existing_video_object.description   = vod["description"]
+      existing_video_object.created_at    = datetime.datetime.strptime(vod["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc)
+      existing_video_object.published_at  = datetime.datetime.strptime(vod["published_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc)
+      existing_video_object.url           = vod["url"]
+      existing_video_object.thumbnail_url = vod["thumbnail_url"]
+      existing_video_object.viewable      = vod["viewable"]
+      existing_video_object.view_count    = vod["view_count"]
+      existing_video_object.language      = vod["language"]
+      existing_video_object.vod_type      = vod["type"]
+      existing_video_object.duration      = vod["duration"]
+  
+      existing_video_object.save()
+    except Exception as e:
+      print(f"unable to parse twitch vod response: {e}")
   
   for vod in TwitchVideo.objects.all():
     voddate = utc_to_local(vod.created_at, TIMEZONE).strftime(STREAMINFO_DATE_FORMAT)
