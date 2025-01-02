@@ -208,8 +208,10 @@ def get_record(request):
     times_ontime_str = ontime if ontime != 100 else "💯"
     times_early_str = early if early != 100 else "💯"
     times_late_str = late if late != 100 else "💯"
-      
-    percent = any(text in percent_arg.lower() for text in ["%", "percent"])
+    
+    percent = False
+    if percent_arg is not None:
+      percent = any(text in percent_arg.lower() for text in ["%", "percent"])
     
     return_str = f"{get_when_live_string(user_id_arg)} " if perioddt_start <= todaydt <= perioddt_end else ""
     if percent:
