@@ -113,15 +113,15 @@ def get_record(request):
   if period_arg is not None:
     if PERIOD_REGEX.search(period_arg) and len(period_arg) >= 4:
       period_filter = period_arg.replace("-", "").replace("/", "").replace(" ", "")
-    elif period_arg.lower() == "lastyear":
+    elif any(text in period_arg.lower() for text in ["lastyear", "last year"]):
       period_filter = (todaydt - datetime.timedelta(days = 365)).strftime("%Y")
-    elif period_arg.lower() == "currentyear":
+    elif any(text in period_arg.lower() for text in ["currentyear", "current year"]):
       period_filter = todaydt.strftime("%Y")
-    elif period_arg.lower() == "lastmonth":
+    elif any(text in period_arg.lower() for text in ["lastmonth", "last month"]):
       period_filter = (todaydt.replace(day=1) - datetime.timedelta(days = 1)).strftime("%Y%m")
-    elif period_arg.lower() == "currentmonth":
+    elif any(text in period_arg.lower() for text in ["currentmonth", "current month"]):
       period_filter = todaydt.strftime("%Y%m")
-    elif period_arg.lower() == "alltime":
+    elif any(text in period_arg.lower() for text in ["alltime", "all", "all time"]):
       period_filter = None
     else:
       period_filter = todaydt.strftime("%Y")
@@ -166,15 +166,6 @@ def get_record(request):
       late += 1
       
   if plaintext:
-    perioddt_end = todaydt
-    if period_filter is None:
-      perioddt_end = todaydt.replace(month = 12, day = 31, hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
-    elif len(period_filter) == 4:
-      perioddt_end = datetime.datetime.strptime(period_filter, "%Y").replace(month = 12, day = 31, hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
-    elif len(period_filter) == 6:
-      perioddt_end = datetime.datetime.strptime(period_filter, "%Y%m")
-      perioddt_end = perioddt_end.replace(day = calendar.monthrange(year = perioddt_end.year, month = perioddt_end.month)[1], hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
-    
     perioddt_start = todaydt
     if period_filter is None:
       perioddt_start = datetime.datetime(year = 1971, month = 1, day = 1, hour = 0, minute = 0, second = 0, microsecond = 1, tzinfo = TIMEZONE)
@@ -183,6 +174,15 @@ def get_record(request):
     elif len(period_filter) == 6:
       perioddt_start = datetime.datetime.strptime(period_filter, "%Y%m")
       perioddt_start = perioddt_start.replace(day = 1, hour = 0, minute = 0, second = 0, microsecond= 1, tzinfo = TIMEZONE)
+      
+    perioddt_end = todaydt
+    if period_filter is None:
+      perioddt_end = todaydt.replace(month = 12, day = 31, hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
+    elif len(period_filter) == 4:
+      perioddt_end = datetime.datetime.strptime(period_filter, "%Y").replace(month = 12, day = 31, hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
+    elif len(period_filter) == 6:
+      perioddt_end = datetime.datetime.strptime(period_filter, "%Y%m")
+      perioddt_end = perioddt_end.replace(day = calendar.monthrange(year = perioddt_end.year, month = perioddt_end.month)[1], hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
     
     this_year = todaydt.strftime("%Y")
     this_month = todaydt.strftime("%Y%m")
@@ -206,7 +206,7 @@ def get_record(request):
     times_early_str = early if early != 100 else "💯"
     times_late_str = late if late != 100 else "💯"
       
-    percent = (percent_arg is not None) and ((percent_arg == '%') or (percent_arg.lower() == "percent"))
+    percent = any(text in percent_arg.lower() for text in ["%", "percent"])
     
     return_str = f"{get_when_live_string(user_id_arg)} " if perioddt_start <= todaydt <= perioddt_end else ""
     if percent:
