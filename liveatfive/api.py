@@ -192,7 +192,7 @@ def get_record(request):
     if period_filter is not None and len(period_filter) == 4:
       range_str = " this year" if period_filter == this_year else f" in {period_filter}"
     elif period_filter is not None and len(period_filter) == 6:
-      range_str = " this month" if period_filter == this_month else f" in {perioddt_start.strftime("%B %Y")}"
+      range_str = " this month" if period_filter == this_month else f" in {perioddt_start.strftime('%B %Y')}"
     
     late = total_streams - ontime - early
     times_ontime_str = ontime if ontime != 100 else "💯"
