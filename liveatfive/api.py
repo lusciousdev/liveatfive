@@ -111,7 +111,7 @@ def get_record(request):
   
   period_filter = None
   if period_arg is not None:
-    date_match = DATE_REGEX.match(period_arg)
+    date_match = DATE_REGEX.search(period_arg)
     if date_match:
       year = date_match.groups()[0]
       month = None if len(date_match.groups()) < 2 else date_match.groups()[1]
