@@ -167,14 +167,18 @@ def get_record(request):
       
   if plaintext:
     perioddt_end = todaydt
-    if len(period_filter) == 4:
+    if period_filter is None:
+      perioddt_end = todaydt.replace(month = 12, day = 31, hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
+    elif len(period_filter) == 4:
       perioddt_end = datetime.datetime.strptime(period_filter, "%Y").replace(month = 12, day = 31, hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
     elif len(period_filter) == 6:
       perioddt_end = datetime.datetime.strptime(period_filter, "%Y%m")
       perioddt_end = perioddt_end.replace(day = calendar.monthrange(year = perioddt_end.year, month = perioddt_end.month)[1], hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
     
     perioddt_start = todaydt
-    if len(period_filter) == 4:
+    if period_filter is None:
+      perioddt_start = datetime.datetime(year = 1971, month = 1, day = 1, hour = 0, minute = 0, second = 0, microsecond = 1, tzinfo = TIMEZONE)
+    elif len(period_filter) == 4:
       perioddt_start = datetime.datetime.strptime(period_filter, "%Y").replace(month = 1, day = 1, hour = 0, minute = 0, second = 0, microsecond = 1, tzinfo = TIMEZONE)
     elif len(period_filter) == 6:
       perioddt_start = datetime.datetime.strptime(period_filter, "%Y%m")
