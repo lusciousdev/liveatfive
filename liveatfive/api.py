@@ -110,7 +110,7 @@ def get_record(request):
   if period_arg is not None:
     if period_arg.isdigit() and len(period_arg) >= 4:
       period_filter = period_arg.replace("-", "").replace("/", "")
-    elif period_arg.lower == "lastyear":
+    elif period_arg.lower() == "lastyear":
       period_filter = (todaydt - datetime.timedelta(days = 365)).strftime("%Y")
     elif period_arg.lower() == "currentyear":
       period_filter = todaydt.strftime("%Y")
@@ -122,6 +122,8 @@ def get_record(request):
       period_filter = None
     else:
       period_filter = todaydt.strftime("%Y")
+      
+  print(period_filter)
   
   early = 0  
   ontime = 0
