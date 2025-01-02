@@ -115,7 +115,7 @@ def get_record(request):
     if date_match:
       year = date_match.groups()[0]
       month = None if len(date_match.groups()) < 2 else date_match.groups()[1]
-      period_filter = f"{year}" if month == None else f"{year}{month.rjust(2, "0")}"
+      period_filter = f"{year}" if month == None else f"{year}{month.rjust(2, '0')}"
     elif any(text in period_arg.lower() for text in ["lastyear", "last year"]):
       period_filter = (todaydt - datetime.timedelta(days = 365)).strftime("%Y")
     elif any(text in period_arg.lower() for text in ["currentyear", "current year"]):
