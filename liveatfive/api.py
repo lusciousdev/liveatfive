@@ -11,7 +11,7 @@ from .models import *
 from .config import *
 from .util.timeutil import *
 
-PERIOD_REGEX = re.compile(r"[0-9]{4}[\-\/ ]?([0-9]{2})?")
+DATE_REGEX = re.compile(r"([0-9]{4})[\-\/ ]?([0-9]{1,2})?")
 
 def get_when_live_string(user_id = "", provider = None):
   if (user_id != "") and (str(user_id) == str(CREATOR_ID)):
@@ -111,8 +111,11 @@ def get_record(request):
   
   period_filter = None
   if period_arg is not None:
-    if PERIOD_REGEX.search(period_arg) and len(period_arg) >= 4:
-      period_filter = period_arg.replace("-", "").replace("/", "").replace(" ", "")
+    date_match = DATE_REGEX.match(period_arg)
+    if date_match:
+      year = date_match.groups()[0]
+      month = None if len(date_match.groups()) < 2 else date_match.groups()[1]
+      period_filter = f"{year}" if month == None else f"{year}{month.rjust(2, "0")}"
     elif any(text in period_arg.lower() for text in ["lastyear", "last year"]):
       period_filter = (todaydt - datetime.timedelta(days = 365)).strftime("%Y")
     elif any(text in period_arg.lower() for text in ["currentyear", "current year"]):
@@ -210,7 +213,7 @@ def get_record(request):
     
     return_str = f"{get_when_live_string(user_id_arg)} " if perioddt_start <= todaydt <= perioddt_end else ""
     if percent:
-      return_str += f"{pronoun} {verb} early {round((early * 100.0) / total_streams, 1)}%, on time {round((ontime * 100.0) / total_streams, 1)}%, and late {round(((total_streams-ontime-early) * 100.0) / total_streams, 1)}% of all streams{range_str}."
+      return_str += f"{pronoun} {verb} early {round((early * 100.0) / max(total_streams, 1), 1)}%, on time {round((ontime * 100.0) / max(total_streams, 1), 1)}%, and late {round(((total_streams-ontime-early) * 100.0) / max(total_streams, 1), 1)}% of all streams{range_str}."
     else:
       return_str += f"{pronoun} {verb} early {times_early_str} times, on time {times_ontime_str} times, and late {times_late_str} times{range_str}."
     if perioddt_start <= todaydt <= perioddt_end and streak_length > 1:
