@@ -15,7 +15,7 @@ var wasLive = false;
 
 function populateRecord(data)
 {
-  var statusString = "eary";
+  var statusString = "early";
   if (data['streak-status'] == 1)
   {
     statusString = "on time";

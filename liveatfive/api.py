@@ -4,6 +4,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonRespons
 from celery import Celery, shared_task
 from celery.schedules import crontab
 import luscioustwitch
+import calendar
 
 from .models import *
 from .config import *
@@ -80,16 +81,16 @@ def get_record(request):
   
   todaydt = utc_to_local(dt.datetime.now(tz = dt.timezone.utc), TIMEZONE)
   
-  weekday_str = request.GET.get("weekday", "")
-  user_id = request.GET.get("userid", "")
-  percent_arg = request.GET.get("percent", "")
   plaintext = ("plaintext" in request.GET)
-  month_str = request.GET.get("month", None)
-  year_str = request.GET.get("year", None)
+  
+  weekday_arg : str = request.GET.get("weekday", None)
+  user_id_arg : str = request.GET.get("userid", None)
+  period_arg : str = request.GET.get("period", None)
+  percent_arg : str = request.GET.get("percent", None)
   
   weekday_filter = None
-  if weekday_str is not None:
-    weekdaystr = weekday_str.lower()
+  if weekday_arg is not None:
+    weekdaystr = weekday_arg.lower()
     if weekdaystr in ['m', 'mon', 'monday', '0']:
       weekday_filter = Weekday.MON
     elif weekdaystr in ['t', 'tues', 'tuesday', '1']:
@@ -105,15 +106,22 @@ def get_record(request):
     elif weekdaystr in ['su', 'sun', 'sunday', '6']:
       weekday_filter = Weekday.SUN
   
-  year_filter = None
-  if year_str is not None:
-    if year_str.isdigit() and len(year_str) == 4:
-      year_filter = year_str
-      
-  month_filter = None
-  if month_str is not None:
-    if month_str.isdigit() and len(month_str) < 3:
-      month_filter = month_str.rjust(2, "0")
+  period_filter = None
+  if period_arg is not None:
+    if period_arg.isdigit() and len(period_arg) >= 4:
+      period_filter = period_arg.replace("-", "").replace("/", "")
+    elif period_arg.lower == "lastyear":
+      period_filter = (todaydt - datetime.timedelta(days = 365)).strftime("%Y")
+    elif period_arg.lower() == "currentyear":
+      period_filter = todaydt.strftime("%Y")
+    elif period_arg.lower() == "lastmonth":
+      period_filter = (todaydt.replace(day=1) - datetime.timedelta(days = 1)).strftime("%Y%m")
+    elif period_arg.lower() == "currentmonth":
+      period_filter = todaydt.strftime("%Y%m")
+    elif period_arg.lower() == "alltime":
+      period_filter = None
+    else:
+      period_filter = todaydt.strftime("%Y")
   
   early = 0  
   ontime = 0
@@ -126,13 +134,8 @@ def get_record(request):
   
   streaminfo_list = StreamInfo.objects.all()
   
-  if year_filter is not None and month_filter is not None:
-    combofilter = year_filter + month_filter
-    streaminfo_list = streaminfo_list.filter(date__startswith = combofilter)
-  elif year_filter is not None:
-    streaminfo_list = streaminfo_list.filter(date__startswith = year_filter)
-  elif month_filter is not None:
-    streaminfo_list = streaminfo_list.filter(date__iregex = rf"^[0-9]{{4}}({month_filter})[0-9]{{2}}$")
+  if period_filter is not None:
+    streaminfo_list = streaminfo_list.filter(date__startswith = period_filter)
     
   if weekday_filter is not None:
     streaminfo_list = streaminfo_list.filter(weekday = weekday_filter)
@@ -160,33 +163,50 @@ def get_record(request):
       late += 1
       
   if plaintext:
-    is_creator = (str(user_id) == str(CREATOR_ID))
-    pronoun = "He" if not is_creator else "You"
-    verb = "has" if not is_creator else "have"
+    perioddt_end = todaydt
+    if len(period_filter) == 4:
+      perioddt_end = datetime.datetime.strptime(period_filter, "%Y").replace(month = 12, day = 31, hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
+    elif len(period_filter) == 6:
+      perioddt_end = datetime.datetime.strptime(period_filter, "%Y%m")
+      perioddt_end = perioddt_end.replace(day = calendar.monthrange(year = perioddt_end.year, month = perioddt_end.month)[1], hour = 23, minute = 59, second = 59, microsecond= 999999, tzinfo = TIMEZONE)
+    
+    perioddt_start = todaydt
+    if len(period_filter) == 4:
+      perioddt_start = datetime.datetime.strptime(period_filter, "%Y").replace(month = 1, day = 1, hour = 0, minute = 0, second = 0, microsecond = 1, tzinfo = TIMEZONE)
+    elif len(period_filter) == 6:
+      perioddt_start = datetime.datetime.strptime(period_filter, "%Y%m")
+      perioddt_start = perioddt_start.replace(day = 1, hour = 0, minute = 0, second = 0, microsecond= 1, tzinfo = TIMEZONE)
     
     this_year = todaydt.strftime("%Y")
+    this_month = todaydt.strftime("%Y%m")
+    
+    is_creator = (str(user_id_arg) == str(CREATOR_ID))
+    pronoun = "He" if not is_creator else "You"
+    
+    if perioddt_end < todaydt:
+      verb = "was" if not is_creator else "were"
+    else:
+      verb = "has been" if not is_creator else "have been"
     
     range_str = ""
-    if year_filter is not None and month_filter is not None:
-      range_str = f" in {year_filter}-{month_filter}"
-    elif year_filter is not None:
-      range_str = " this year" if year_filter == this_year else f" in {year_filter}"
-    elif month_filter is not None:
-      month_name = dt.datetime(1971, int(month_filter), 1, 0, 0, 1).strftime("%B")
-      range_str = f" in {month_name}"
+    if period_filter is not None and len(period_filter) == 4:
+      range_str = " this year" if period_filter == this_year else f" in {period_filter}"
+    elif period_filter is not None and len(period_filter) == 6:
+      range_str = " this month" if period_filter == this_month else f" in {perioddt_start.strftime("%B %Y")}"
     
     late = total_streams - ontime - early
     times_ontime_str = ontime if ontime != 100 else "💯"
     times_early_str = early if early != 100 else "💯"
     times_late_str = late if late != 100 else "💯"
       
-    percent = (percent_arg == '%') or (percent_arg.lower() == "percent")
+    percent = (percent_arg is not None) and ((percent_arg == '%') or (percent_arg.lower() == "percent"))
     
+    return_str = f"{get_when_live_string(user_id_arg)} " if perioddt_start <= todaydt <= perioddt_end else ""
     if percent:
-      return_str = f"{get_when_live_string(user_id)} {pronoun} {verb} been early {round((early * 100.0) / total_streams, 1)}%, on time {round((ontime * 100.0) / total_streams, 1)}%, and late {round(((total_streams-ontime-early) * 100.0) / total_streams, 1)}% of all streams{range_str}."
+      return_str += f"{pronoun} {verb} early {round((early * 100.0) / total_streams, 1)}%, on time {round((ontime * 100.0) / total_streams, 1)}%, and late {round(((total_streams-ontime-early) * 100.0) / total_streams, 1)}% of all streams{range_str}."
     else:
-      return_str = f"{get_when_live_string(user_id)} {pronoun} {verb} been early {times_early_str} times, on time {times_ontime_str} times, and late {times_late_str} times{range_str}."
-    if streak_length > 1:
+      return_str += f"{pronoun} {verb} early {times_early_str} times, on time {times_ontime_str} times, and late {times_late_str} times{range_str}."
+    if perioddt_start <= todaydt <= perioddt_end and streak_length > 1:
       return_str += f" {pronoun} {verb} been {streak_type_str.lower()} {streak_length} streams in a row."
       
     return HttpResponse(return_str, status = 200)
