@@ -5,10 +5,13 @@ from celery import Celery, shared_task
 from celery.schedules import crontab
 import luscioustwitch
 import calendar
+import re
 
 from .models import *
 from .config import *
 from .util.timeutil import *
+
+PERIOD_REGEX = re.compile(r"[0-9]{4}[\-\/ ]?([0-9]{2})?")
 
 def get_when_live_string(user_id = "", provider = None):
   if (user_id != "") and (str(user_id) == str(CREATOR_ID)):
@@ -108,8 +111,8 @@ def get_record(request):
   
   period_filter = None
   if period_arg is not None:
-    if period_arg.isdigit() and len(period_arg) >= 4:
-      period_filter = period_arg.replace("-", "").replace("/", "")
+    if PERIOD_REGEX.search(period_arg) and len(period_arg) >= 4:
+      period_filter = period_arg.replace("-", "").replace("/", "").replace(" ", "")
     elif period_arg.lower() == "lastyear":
       period_filter = (todaydt - datetime.timedelta(days = 365)).strftime("%Y")
     elif period_arg.lower() == "currentyear":
@@ -122,8 +125,6 @@ def get_record(request):
       period_filter = None
     else:
       period_filter = todaydt.strftime("%Y")
-      
-  print(period_filter)
   
   early = 0  
   ontime = 0
