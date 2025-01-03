@@ -115,7 +115,7 @@ function handleAjaxError(data)
 }
 
 $(window).on('load', function() {
-  var recordUrl = getRecordUrl
+  var recordUrl = getRecordUrl + "?period=currentyear"
   AjaxGet(recordUrl, {}, populateRecord, handleAjaxError);
   checkIsLive();
 
