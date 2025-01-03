@@ -115,10 +115,10 @@ function handleAjaxError(data)
 }
 
 $(window).on('load', function() {
-  var recordUrl = getRecordUrl + "?year=2024"
+  var recordUrl = getRecordUrl
   AjaxGet(recordUrl, {}, populateRecord, handleAjaxError);
   checkIsLive();
 
-  var intervalId = setInterval(function() { checkIsLive(); }, 30000);
+  var intervalId = setInterval(function() { checkIsLive(); }, 15000);
   var otherInterval = setInterval(function() { setIsLiveText(); }, 500);
 });
