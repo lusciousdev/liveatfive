@@ -79,21 +79,21 @@ def get_creator_info():
       existing_video_object : TwitchVideo
       existing_video_object, created = TwitchVideo.objects.get_or_create(vod_id = vod["id"])
       
-      existing_video_object.stream_id     = vod["stream_id"]
-      existing_video_object.user_id       = vod["user_id"]
-      existing_video_object.user_login    = vod["user_login"]
-      existing_video_object.user_name     = vod["user_name"]
-      existing_video_object.title         = vod["title"]
-      existing_video_object.description   = vod["description"]
-      existing_video_object.created_at    = datetime.datetime.strptime(vod["created_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc)
-      existing_video_object.published_at  = datetime.datetime.strptime(vod["published_at"], luscioustwitch.TWITCH_API_TIME_FORMAT).replace(tzinfo = datetime.timezone.utc)
-      existing_video_object.url           = vod["url"]
-      existing_video_object.thumbnail_url = vod["thumbnail_url"]
-      existing_video_object.viewable      = vod["viewable"]
-      existing_video_object.view_count    = vod["view_count"]
-      existing_video_object.language      = vod["language"]
-      existing_video_object.vod_type      = vod["type"]
-      existing_video_object.duration      = vod["duration"]
+      existing_video_object.stream_id     = vod.stream_id
+      existing_video_object.user_id       = vod.user_id
+      existing_video_object.user_login    = vod.user_login
+      existing_video_object.user_name     = vod.user_name
+      existing_video_object.title         = vod.title
+      existing_video_object.description   = vod.description
+      existing_video_object.created_at    = vod.created_at.replace(tzinfo = datetime.timezone.utc)
+      existing_video_object.published_at  = vod.published_at.replace(tzinfo = datetime.timezone.utc)
+      existing_video_object.url           = vod.url
+      existing_video_object.thumbnail_url = vod.thumbnail_url
+      existing_video_object.viewable      = vod.viewable
+      existing_video_object.view_count    = vod.view_count
+      existing_video_object.language      = vod.language
+      existing_video_object.vod_type      = vod.type
+      existing_video_object.duration      = vod.duration
   
       existing_video_object.save()
     except Exception as e:
